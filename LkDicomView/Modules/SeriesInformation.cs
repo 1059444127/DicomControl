@@ -14,10 +14,9 @@ namespace LkDicomView.Modules
         private int windowWidth = 400;
         private int windowCenter = 40;
         private float scale = 1;
-        private bool isLazyLoad;
-        public SeriesInformation(bool isLazyLoad = true)
+
+        public SeriesInformation()
         {
-            this.isLazyLoad = isLazyLoad;
             imageFrames = new List<DicomImage>();
             imageTempFrames = new List<Image>();
         }
@@ -28,28 +27,10 @@ namespace LkDicomView.Modules
 
         public DicomDataset DicomMetaInfo { get; set; }
 
-        private void RefreshFramesToTemp()
-        {
-            imageTempFrames.Clear();
-            foreach (var image in imageFrames)
-            {
-                for (var i = 0; i < image.NumberOfFrames; i++)
-                {
-                    imageTempFrames.Add(new Bitmap(image.RenderImage(i).AsBitmap()));
-                }
-            }
-        }
-
         public void AddFrames(DicomImage image)
         {
-            imageFrames.Add(image);
-            if (!isLazyLoad)
-            {
-                for (var i = 0; i < image.NumberOfFrames; i++)
-                {
-                    imageTempFrames.Add(new Bitmap(image.RenderImage(i).AsBitmap()));
-                }
-            }   
+            image.ShowOverlays = true;
+            imageFrames.Add(image); 
         }
 
         public int WindowWidth
@@ -62,10 +43,6 @@ namespace LkDicomView.Modules
             {
                 windowWidth = value;
                 imageFrames.ForEach(a => a.WindowWidth = value);
-                if (!isLazyLoad)
-                {
-                    RefreshFramesToTemp();
-                }
             }
         }
         public int WindowCenter
@@ -78,10 +55,6 @@ namespace LkDicomView.Modules
             {
                 windowCenter = value;
                 imageFrames.ForEach(a => a.WindowCenter = value);
-                if (!isLazyLoad)
-                {
-                    RefreshFramesToTemp();
-                }
             }
         }
 
@@ -103,10 +76,6 @@ namespace LkDicomView.Modules
                 }
                 scale = value;
                 imageFrames.ForEach(a => a.Scale = value);
-                if (!isLazyLoad)
-                {
-                    RefreshFramesToTemp();
-                }
             }
         }
 
@@ -139,32 +108,24 @@ namespace LkDicomView.Modules
                 {
                     throw new IndexOutOfRangeException("index超过总帧数");
                 }
-                if (isLazyLoad)
+                var location = 0;
+                foreach (var i in imageFrames)
                 {
-                    var location = 0;
-                    foreach (var i in imageFrames)
+                    if (location + i.NumberOfFrames < index)
                     {
-                        if (location + i.NumberOfFrames < index)
-                        {
-                            location = location + i.NumberOfFrames;
-                        }
-                        else
-                        {
-                            var renderIndex = index - location - 1;
-                            if (renderIndex == -1)
-                            {
-                                renderIndex = 0;
-                            }
-                            return new Bitmap(i.RenderImage(renderIndex).AsBitmap());
-                        }
+                        location = location + i.NumberOfFrames;
                     }
-                    throw new Exception("未知错误");
+                    else
+                    {
+                        var renderIndex = index - location - 1;
+                        if (renderIndex == -1)
+                        {
+                            renderIndex = 0;
+                        }
+                        return new Bitmap(i.RenderImage(renderIndex).AsBitmap());
+                    }
                 }
-                else
-                {
-                    return imageTempFrames[index];
-                }
-                
+                throw new Exception("未知错误");
             }
         }
 

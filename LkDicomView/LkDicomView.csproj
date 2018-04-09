@@ -61,7 +61,6 @@
       <DependentUpon>LkDicomViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="Modules\AnnObjectCollection.cs" />
-    <Compile Include="Modules\Line.cs" />
     <Compile Include="Modules\SeriesInformation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

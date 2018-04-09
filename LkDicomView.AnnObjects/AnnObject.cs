@@ -15,50 +15,9 @@ namespace LkDicomView.AnnObjects
             SetStyle(ControlStyles.Opaque, true);
         }
 
-        private PointF beginPosition;
-        private PointF endPosition;
-
-        public PointF BeginPosition
-        {
-            get {
-                return beginPosition;
-            }
-            set {
-                beginPosition = value;
-                Invalidate();
-            }
-        }
-
-        public PointF EndPosition
-        {
-            get
-            {
-                return endPosition;
-            }
-            set
-            {
-                endPosition = value;
-                Invalidate();
-            }
-        }
-
         public int PenWidth { get; set; } = 2;
 
         public int FrameIndex { get; set; }
-
-        private float scale;
-        public new float Scale
-        {
-            get
-            {
-                return scale;
-            }
-            set
-            {
-                scale = value;
-                Invalidate();
-            }
-        }
 
         protected override CreateParams CreateParams
         {
@@ -68,6 +27,17 @@ namespace LkDicomView.AnnObjects
                 cp.ExStyle |= 0x20;  // 开启 WS_EX_TRANSPARENT,使控件支持透明
                 return cp;
             }
+        }
+
+        protected Point p1;
+        protected Point p2;
+
+        protected void SetLocation()
+        {
+            Top = Math.Min(p1.Y, p2.Y);
+            Left = Math.Min(p1.X, p2.X);
+            Width = Math.Abs(p2.X - p1.X) + 40;
+            Height = Math.Abs(p2.Y - p1.Y) + 25;
         }
 
         private bool isSelected;
@@ -90,34 +60,6 @@ namespace LkDicomView.AnnObjects
                 e.Graphics.DrawRectangle(new Pen(new SolidBrush(Color.White),2),e.ClipRectangle);
             }
             base.OnPaint(e);
-        }
-
-        protected List<PointF> SetLocation()
-        {
-            return SetLocation(new List<PointF>() { BeginPosition, EndPosition });
-        }
-
-        protected List<PointF> SetLocation(List<PointF> points)
-        {
-            var scaledPoints = points.Select(a=>a.ScaleBiggerPoint(Scale));
-            var maxX = scaledPoints.Max(a => a.X);
-            var minX = scaledPoints.Min(a => a.X);
-            var maxY = scaledPoints.Max(a => a.Y);
-            var minY = scaledPoints.Min(a => a.Y);
-            Width = (int)(maxX - minX) + 50;
-            Height = (int)(maxY - minY) + 20;
-            Top = (int)minY;
-            Left = (int)minX;
-
-            var result = new List<PointF>();
-            foreach(var i in scaledPoints)
-            {
-                result.Add(new PointF() {
-                    X = i.X - Left,
-                    Y = i.Y - Top,
-                });
-            }
-            return result;
         }
     }
 }

@@ -14,31 +14,26 @@ namespace LkDicomView.Controls
     public class DicomImageBox : PictureBox
     {
 
-        private AnnObjectContainer annObjectContainer;
-
-        public AnnObjectContainer AnnObjectContainer
-        {
-            get
-            {
-                return annObjectContainer;
-            }
-        }
+        public AnnObjectContainer AnnObjectContainer { get; }
 
         public DicomImageBox()
         {
             this.DoubleBuffered = true;
             this.ResizeRedraw = true;
-            annObjectContainer = new AnnObjectContainer();
+            AnnObjectContainer = new AnnObjectContainer();
 
         }
 
-        public void AddAnnObject(AnnObjectType annObjectType, int frameIndex, Point begin, Point end)
+        protected override bool ScaleChildren => true;
+
+        public void AddAnnObject(AnnObjectType annObjectType, int frameIndex, Point p1, Point p2)
         {
-            var annObject = AnnObjectContainer.CreateAnnObject(annObjectType, begin, end);
+            var annObject = AnnObjectContainer.CreateAnnObject(annObjectType, p1, p2);
             annObject.Parent = this;
             annObject.AutoSize = true;
+            annObject.BackColor = Color.Black;
             annObject.FrameIndex = frameIndex;
-            annObject.Scale = Scale;
+            
             annObject.MouseDown += new MouseEventHandler((o, e) => {
                 if(e.Button == MouseButtons.Left)
                 {
@@ -46,34 +41,16 @@ namespace LkDicomView.Controls
                     selected.IsSelected = true;
                 }
             });
-            annObjectContainer.Add(annObject);
+            AnnObjectContainer.Add(annObject);
             ShowAnnObjects();
         }
 
         private int frameIndex;
-        private float scale;
 
         public List<AnnObject> GetAnnObjects(int frameIndex)
         {
-            var annObjects = annObjectContainer.Where(a => a.FrameIndex == frameIndex);
-            return annObjectContainer.ToList();
-        }
-
-        public new float Scale
-        {
-            get
-            {
-                return scale;
-            }
-            set
-            {
-                scale = value;
-                foreach (AnnObject c in Controls)
-                {
-                    c.Scale = value;
-                    c.Invalidate();
-                }
-            }
+            var annObjects = AnnObjectContainer.Where(a => a.FrameIndex == frameIndex);
+            return AnnObjectContainer.ToList();
         }
 
         public int FrameIndex
@@ -91,7 +68,7 @@ namespace LkDicomView.Controls
 
         private void ShowAnnObjects()
         {
-            foreach (var i in annObjectContainer)
+            foreach (var i in AnnObjectContainer)
             {
                 if (i.FrameIndex == FrameIndex)
                 {
@@ -107,7 +84,7 @@ namespace LkDicomView.Controls
         protected override void OnClick(EventArgs e)
         {
 
-            annObjectContainer.ForEach(a => a.IsSelected = false);
+            AnnObjectContainer.ForEach(a => a.IsSelected = false);
             Invalidate();
         }
 
@@ -115,9 +92,9 @@ namespace LkDicomView.Controls
         {
             if(e.KeyData == Keys.Delete)
             {
-                var currentSelected = annObjectContainer.Where(a => a.FrameIndex == frameIndex && a.IsSelected);
+                var currentSelected = AnnObjectContainer.Where(a => a.FrameIndex == frameIndex && a.IsSelected);
                 currentSelected.ToList().ForEach(a => {
-                    annObjectContainer.Remove(a);
+                    AnnObjectContainer.Remove(a);
                     Controls.Remove(a);
                 });
                 base.OnKeyDown(e);
@@ -152,8 +129,8 @@ namespace LkDicomView.Controls
             if (e.Button == MouseButtons.Left && isLeftMouseDown && beginMousePosition.GetDistance(MousePosition) > 2)
             {
                 isLeftMouseDown = false;
-                var begin = PointToClient(beginMousePosition).ScaleSmallerPoint(scale);
-                var end = PointToClient(MousePosition).ScaleSmallerPoint(scale);
+                var begin = PointToClient(beginMousePosition);
+                var end = PointToClient(MousePosition);
                 AddAnnObject(AnnObjectType.Ruler, frameIndex, begin, end);
                 return;
             }

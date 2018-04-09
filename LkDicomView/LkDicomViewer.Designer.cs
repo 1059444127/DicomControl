@@ -32,18 +32,20 @@ namespace LkDicomView
         {
             this.vScrollBar = new System.Windows.Forms.VScrollBar();
             this.frameIndexLabel = new System.Windows.Forms.Label();
-            this.imageBox = new LkDicomView.Controls.DicomImageBox();
             this.patientIdLabel = new System.Windows.Forms.Label();
             this.patientNameLabel = new System.Windows.Forms.Label();
+            this.windowLabel = new System.Windows.Forms.Label();
+            this.imageBox = new LkDicomView.Controls.DicomImageBox();
             ((System.ComponentModel.ISupportInitialize)(this.imageBox)).BeginInit();
             this.SuspendLayout();
             // 
             // vScrollBar
             // 
             this.vScrollBar.Dock = System.Windows.Forms.DockStyle.Right;
-            this.vScrollBar.Location = new System.Drawing.Point(740, 0);
+            this.vScrollBar.LargeChange = 1;
+            this.vScrollBar.Location = new System.Drawing.Point(870, 0);
             this.vScrollBar.Name = "vScrollBar";
-            this.vScrollBar.Size = new System.Drawing.Size(17, 464);
+            this.vScrollBar.Size = new System.Drawing.Size(17, 661);
             this.vScrollBar.TabIndex = 1;
             this.vScrollBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.vScrollBar_Scroll);
             // 
@@ -51,35 +53,23 @@ namespace LkDicomView
             // 
             this.frameIndexLabel.AutoSize = true;
             this.frameIndexLabel.BackColor = System.Drawing.Color.Transparent;
+            this.frameIndexLabel.Font = new System.Drawing.Font("微软雅黑", 10F);
             this.frameIndexLabel.ForeColor = System.Drawing.Color.White;
-            this.frameIndexLabel.Location = new System.Drawing.Point(18, 14);
+            this.frameIndexLabel.Location = new System.Drawing.Point(17, 15);
             this.frameIndexLabel.Name = "frameIndexLabel";
-            this.frameIndexLabel.Size = new System.Drawing.Size(41, 12);
+            this.frameIndexLabel.Size = new System.Drawing.Size(53, 20);
             this.frameIndexLabel.TabIndex = 2;
             this.frameIndexLabel.Text = "Frame:";
-            // 
-            // imageBox
-            // 
-            this.imageBox.FrameIndex = 0;
-            this.imageBox.Location = new System.Drawing.Point(111, 32);
-            this.imageBox.Name = "imageBox";
-            this.imageBox.Scale = 0F;
-            this.imageBox.Size = new System.Drawing.Size(477, 377);
-            this.imageBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.imageBox.TabIndex = 0;
-            this.imageBox.TabStop = false;
-            this.imageBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Move_OnMouseDown);
-            this.imageBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Move_OnMouseMove);
-            this.imageBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Move_OnMouseUp);
             // 
             // patientIdLabel
             // 
             this.patientIdLabel.AutoSize = true;
             this.patientIdLabel.BackColor = System.Drawing.Color.Transparent;
+            this.patientIdLabel.Font = new System.Drawing.Font("微软雅黑", 10F);
             this.patientIdLabel.ForeColor = System.Drawing.Color.White;
-            this.patientIdLabel.Location = new System.Drawing.Point(18, 34);
+            this.patientIdLabel.Location = new System.Drawing.Point(17, 41);
             this.patientIdLabel.Name = "patientIdLabel";
-            this.patientIdLabel.Size = new System.Drawing.Size(65, 12);
+            this.patientIdLabel.Size = new System.Drawing.Size(75, 20);
             this.patientIdLabel.TabIndex = 3;
             this.patientIdLabel.Text = "PatientID:";
             // 
@@ -87,18 +77,46 @@ namespace LkDicomView
             // 
             this.patientNameLabel.AutoSize = true;
             this.patientNameLabel.BackColor = System.Drawing.Color.Transparent;
+            this.patientNameLabel.Font = new System.Drawing.Font("微软雅黑", 10F);
             this.patientNameLabel.ForeColor = System.Drawing.Color.White;
-            this.patientNameLabel.Location = new System.Drawing.Point(18, 54);
+            this.patientNameLabel.Location = new System.Drawing.Point(17, 67);
             this.patientNameLabel.Name = "patientNameLabel";
-            this.patientNameLabel.Size = new System.Drawing.Size(77, 12);
+            this.patientNameLabel.Size = new System.Drawing.Size(100, 20);
             this.patientNameLabel.TabIndex = 4;
             this.patientNameLabel.Text = "PatientName:";
+            // 
+            // windowLabel
+            // 
+            this.windowLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.windowLabel.AutoSize = true;
+            this.windowLabel.BackColor = System.Drawing.Color.Transparent;
+            this.windowLabel.Font = new System.Drawing.Font("微软雅黑", 10F);
+            this.windowLabel.ForeColor = System.Drawing.Color.White;
+            this.windowLabel.Location = new System.Drawing.Point(17, 625);
+            this.windowLabel.Name = "windowLabel";
+            this.windowLabel.Size = new System.Drawing.Size(68, 20);
+            this.windowLabel.TabIndex = 5;
+            this.windowLabel.Text = "WL: WW:";
+            // 
+            // imageBox
+            // 
+            this.imageBox.FrameIndex = 0;
+            this.imageBox.Location = new System.Drawing.Point(204, 54);
+            this.imageBox.Name = "imageBox";
+            this.imageBox.Size = new System.Drawing.Size(512, 512);
+            this.imageBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.imageBox.TabIndex = 0;
+            this.imageBox.TabStop = false;
+            this.imageBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Move_OnMouseDown);
+            this.imageBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Move_OnMouseMove);
+            this.imageBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Move_OnMouseUp);
             // 
             // LkDicomViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
+            this.Controls.Add(this.windowLabel);
             this.Controls.Add(this.patientNameLabel);
             this.Controls.Add(this.patientIdLabel);
             this.Controls.Add(this.frameIndexLabel);
@@ -106,7 +124,7 @@ namespace LkDicomView
             this.Controls.Add(this.imageBox);
             this.DoubleBuffered = true;
             this.Name = "LkDicomViewer";
-            this.Size = new System.Drawing.Size(757, 464);
+            this.Size = new System.Drawing.Size(887, 661);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Move_OnMouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Move_OnMouseMove);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Move_OnMouseUp);
@@ -123,5 +141,6 @@ namespace LkDicomView
         private System.Windows.Forms.Label frameIndexLabel;
         private System.Windows.Forms.Label patientIdLabel;
         private System.Windows.Forms.Label patientNameLabel;
+        private System.Windows.Forms.Label windowLabel;
     }
 }

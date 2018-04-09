@@ -7,6 +7,7 @@ using Dicom;
 using System.IO;
 using LkDicomView.Modules;
 using LkDicomView.Controls;
+using System;
 
 namespace LkDicomView
 {
@@ -73,11 +74,11 @@ namespace LkDicomView
             imageBox.Image = seriesInformation[0];
             imageBox.Width = seriesInformation[0].Width;
             imageBox.Height = seriesInformation[0].Height;
-            imageBox.Scale = seriesInformation.Scale;
             imageBox.FrameIndex = currentFrameIndex;
-            vScrollBar.Maximum = seriesInformation.FramesCount;
+            vScrollBar.Maximum = seriesInformation.FramesCount - 1;
             vScrollBar.Value = currentFrameIndex;
-            if(seriesInformation.FramesCount == 1)
+            SetWindowLevel(40, 400);
+            if (seriesInformation.FramesCount == 1)
             {
                 SetLabel();
             }
@@ -93,25 +94,13 @@ namespace LkDicomView
             LoadDicomFiles(Directory.EnumerateFiles(directoryName).ToList());
         }
 
-        public float ImageScale
-        {
-            get
-            {
-                return seriesInformation.Scale;
-            }
-            set
-            {
-                seriesInformation.Scale = value;
-                imageBox.Image = seriesInformation[currentFrameIndex];
-                imageBox.Scale = seriesInformation.Scale;
-            }
-        }
-
         protected override void OnMouseWheel(MouseEventArgs e)
         {
             if (ModifierKeys == Keys.Control)
             {
-                ImageScale = e.Delta > 0 ? ImageScale + 0.1f : ImageScale - 0.1f;
+                var tempLocation = imageBox.Location;
+                imageBox.Scale(e.Delta > 0 ? new SizeF(1.1f, 1.1f) : new SizeF(0.9f, 0.9f));
+                imageBox.Location = tempLocation;
             }
             else
             {
@@ -124,7 +113,6 @@ namespace LkDicomView
                     CurrentFrameIndex = CurrentFrameIndex + 1;
                 }
             }
-
             base.OnMouseWheel(e);
         }
 
@@ -174,6 +162,13 @@ namespace LkDicomView
         protected override void OnKeyDown(KeyEventArgs e)
         {
             imageBox.OnKeyDown(e);
+        }
+
+        public void SetWindowLevel(int windowCenter, int windowWidth)
+        {
+            seriesInformation.WindowCenter = windowCenter;
+            seriesInformation.WindowWidth = windowWidth;
+            windowLabel.Text = $"WL:{windowCenter} WW:{windowWidth}";
         }
     }
 }

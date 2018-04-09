@@ -11,40 +11,23 @@ namespace LkDicomView.AnnObjects.AnnObjects
 {
     public class LineAnnObject: AnnObject
     {
-        public LineAnnObject(Point startLocation, Point endLocation) : base()
+        public LineAnnObject(Point p1, Point p2) : base()
         {
-            this.BeginPosition = startLocation;
-            this.EndPosition = endLocation;
-            Unit = UnitType.Pixel;
+            this.p1 = p1;
+            this.p2 = p2;
+            SetLocation();
+            defaultRect = ClientRectangle;
         }
+
+        private Rectangle defaultRect;
+
         protected override void OnPaint(PaintEventArgs e)
         {
-            var newPoints = SetLocation();
-            e.Graphics.DrawLine(new Pen(Color.OrangeRed, PenWidth), newPoints[0], newPoints[1]);
-            e.Graphics.DrawString(Distance.ToString(), new Font("宋体",12),new SolidBrush(Color.OrangeRed), newPoints[1]);
+            var scale = ClientRectangle.Width / (float)defaultRect.Width;
+            e.Graphics.DrawLine(new Pen(Color.OrangeRed, 2), p1.ScalePoint(scale).IOffset(-Left, -Top), p2.ScalePoint(scale).IOffset(-Left, -Top));
+            e.Graphics.DrawString(Math.Round(p1.GetDistance(p2)* scale, 1).ToString(), new Font("微软雅黑", 9), new SolidBrush(Color.OrangeRed), p2.ScalePoint(scale).IOffset(-Left, -Top));
             base.OnPaint(e);
         }
 
-        public double Distance
-        {
-            get
-            {
-                switch (Unit)
-                {
-                    case UnitType.Pixel:
-                        return Math.Round(BeginPosition.GetDistance(EndPosition), 1);
-                    case UnitType.Centimeter:
-                        var dpix = this.CreateGraphics().DpiX;
-                        var dpiy = this.CreateGraphics().DpiY;
-                        var cmx = (EndPosition.X - BeginPosition.X) * 25.4 / dpix;
-                        var cmy = (EndPosition.Y - BeginPosition.Y) * 25.4 / dpiy;
-                        return Math.Sqrt(cmx * cmx + cmy * cmy);
-                    default:
-                        throw new NotSupportedException();
-                }
-            }
-        }
-
-        public UnitType Unit { get; set; }
     }
 }

@@ -17,19 +17,11 @@ namespace LkDicomView.Library
             return newPoint;
         }
 
-        public static Point ScaleBiggerPoint(this Point point, float scale)
+        public static Point ScalePoint(this Point point, float scale)
         {
             var newPoint = new Point();
             newPoint.X = (int)(point.X * scale);
             newPoint.Y = (int)(point.Y * scale);
-            return newPoint;
-        }
-
-        public static PointF ScaleSmallerPoint(this PointF point, float scale)
-        {
-            var newPoint = new PointF();
-            newPoint.X = point.X / scale;
-            newPoint.Y = point.Y / scale;
             return newPoint;
         }
 
@@ -63,6 +55,11 @@ namespace LkDicomView.Library
         public static PointF Offset(this PointF point, float x, float y)
         {
             return new PointF(point.X + x, point.Y + y);
+        }
+
+        public static Point IOffset(this Point point, int x, int y)
+        {
+            return new Point(point.X + x, point.Y + y);
         }
     }
 }

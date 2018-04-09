@@ -103,12 +103,12 @@ namespace LkDicomView.Modules
             }
         }
 
-        public static AnnObject CreateAnnObject(AnnObjectType annObjectType, Point start, Point end)
+        public static AnnObject CreateAnnObject(AnnObjectType annObjectType, Point p1, Point p2)
         {
             switch (annObjectType)
             {
                 case AnnObjectType.Ruler:
-                    return new LineAnnObject(start, end);
+                    return new LineAnnObject(p1, p2);
                 default:
                     throw new NotSupportedException();
             }

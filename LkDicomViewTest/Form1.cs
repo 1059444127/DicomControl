@@ -14,7 +14,7 @@ namespace LkDicomViewTest
         public Form1()
         {
             InitializeComponent();
-            lkDicomViewer1.LoadDicomDirectory("Images");
+            lkDicomViewer1.LoadDicomDirectory("D:\\Patients\\LKDS-0002");
         }
     }
 }
