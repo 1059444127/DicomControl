@@ -30,6 +30,9 @@ namespace LkDicomView.AnnObjects
         private readonly Point drawStartPosition;
         private readonly Point drawEndPosition;
 
+        public Point StartPosition => drawStartPosition;
+        public Point EndPosition => drawEndPosition;
+
         public float Scale
         {
             get

@@ -80,6 +80,12 @@ namespace LkDicomView.Controls
         {
             foreach (var i in AnnObjectContainer)
             {
+                var rect = new Rectangle(
+                    Math.Min(i.DrawStartPosition.X, i.DrawEndPosition.X) - 25,
+                    Math.Min(i.DrawStartPosition.Y, i.DrawEndPosition.Y) - 25,
+                    Math.Abs(i.DrawStartPosition.X - i.DrawEndPosition.X) + 50,
+                    Math.Abs(i.DrawStartPosition.Y - i.DrawEndPosition.Y) + 50
+                    );
                 if (i.FrameIndex == FrameIndex)
                 {
                     switch (i.Type)
@@ -91,12 +97,6 @@ namespace LkDicomView.Controls
 
                     if (i.IsSelected)
                     {
-                        var rect = new Rectangle(
-                            Math.Min(i.DrawStartPosition.X, i.DrawEndPosition.X) - 25,
-                            Math.Min(i.DrawStartPosition.Y, i.DrawEndPosition.Y) - 25,
-                            Math.Abs(i.DrawStartPosition.X - i.DrawEndPosition.X) + 50,
-                            Math.Abs(i.DrawStartPosition.Y - i.DrawEndPosition.Y) + 50
-                            );
                         g.DrawRectangle(new Pen(Color.White, 2), rect);
                     }
                 }
@@ -121,9 +121,9 @@ namespace LkDicomView.Controls
 
             var clickPosition = PointToClient(MousePosition);
             var currentPageAnnObject = AnnObjectContainer.Where(a => a.FrameIndex == FrameIndex);
-            foreach(var i in currentPageAnnObject)
+            foreach (var i in currentPageAnnObject)
             {
-                if(IsHited(i, clickPosition))
+                if (IsHited(i, clickPosition))
                 {
                     i.IsSelected = true;
                 }
@@ -137,10 +137,11 @@ namespace LkDicomView.Controls
 
         public void KeyPressed(KeyEventArgs e)
         {
-            if(e.KeyData == Keys.Delete)
+            if (e.KeyData == Keys.Delete)
             {
                 var currentSelected = AnnObjectContainer.Where(a => a.FrameIndex == frameIndex && a.IsSelected);
-                currentSelected.ToList().ForEach(a => {
+                currentSelected.ToList().ForEach(a =>
+                {
                     AnnObjectContainer.Remove(a);
                 });
                 Invalidate();
@@ -173,7 +174,7 @@ namespace LkDicomView.Controls
             base.OnMouseMove(e);
         }
 
-        protected override void OnMouseUp( MouseEventArgs e)
+        protected override void OnMouseUp(MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left && isLeftMouseDown && beginMousePosition.GetDistance(MousePosition) > 2)
             {

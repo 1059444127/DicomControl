@@ -9,27 +9,12 @@ namespace LkDicomView.Library
 {
     public static class PointUtils
     {
-        public static PointF ScaleBiggerPoint(this PointF point, float scale)
-        {
-            var newPoint = new PointF();
-            newPoint.X = point.X * scale;
-            newPoint.Y = point.Y * scale;
-            return newPoint;
-        }
 
         public static Point ScalePoint(this Point point, float scale)
         {
             var newPoint = new Point();
             newPoint.X = (int)(point.X * scale);
             newPoint.Y = (int)(point.Y * scale);
-            return newPoint;
-        }
-
-        public static Point ScaleSmallerPoint(this Point point, float scale)
-        {
-            var newPoint = new Point();
-            newPoint.X = (int)(point.X / scale);
-            newPoint.Y = (int)(point.Y / scale);
             return newPoint;
         }
 
@@ -40,21 +25,9 @@ namespace LkDicomView.Library
             return Math.Sqrt(x * x + y * y);
         }
 
-        public static double GetDistance(this PointF point1, PointF point)
+        public static Point GetCenterPoint(Point point1, Point point2)
         {
-            var x = (point.X - point1.X);
-            var y = (point.Y - point1.Y);
-            return Math.Sqrt(x * x + y * y);
-        }
-
-        public static PointF GetCenterPoint(PointF point1, PointF point2)
-        {
-            return new PointF((point1.X + point2.X) / 2, (point1.Y + point2.Y) / 2);
-        }
-
-        public static PointF Offset(this PointF point, float x, float y)
-        {
-            return new PointF(point.X + x, point.Y + y);
+            return new Point((point1.X + point2.X) / 2, (point1.Y + point2.Y) / 2);
         }
 
         public static Point IOffset(this Point point, int x, int y)
