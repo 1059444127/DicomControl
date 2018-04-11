@@ -18,31 +18,41 @@ namespace LkDicomView.Controls
 
         public DicomImageBox()
         {
-            this.DoubleBuffered = true;
+            //this.DoubleBuffered = true;
             this.ResizeRedraw = true;
             AnnObjectContainer = new AnnObjectContainer();
 
         }
 
-        protected override bool ScaleChildren => true;
+        private float currentScale = 1;
+
+        public float CurrentScale
+        {
+            get
+            {
+                return currentScale;
+            }
+            set
+            {
+                currentScale = value;
+                foreach (var i in AnnObjectContainer)
+                {
+                    i.Scale = value;
+                }
+                Invalidate();
+            }
+        }
 
         public void AddAnnObject(AnnObjectType annObjectType, int frameIndex, Point p1, Point p2)
         {
             var annObject = AnnObjectContainer.CreateAnnObject(annObjectType, p1, p2);
-            annObject.Parent = this;
-            annObject.AutoSize = true;
-            annObject.BackColor = Color.Black;
             annObject.FrameIndex = frameIndex;
-            
-            annObject.MouseDown += new MouseEventHandler((o, e) => {
-                if(e.Button == MouseButtons.Left)
-                {
-                    var selected = (AnnObject)o;
-                    selected.IsSelected = true;
-                }
-            });
+            annObject.PenWidth = 2;
+            annObject.IsSelected = true;
+            annObject.Type = AnnObjectType.Ruler;
+
             AnnObjectContainer.Add(annObject);
-            ShowAnnObjects();
+            Invalidate();
         }
 
         private int frameIndex;
@@ -62,64 +72,103 @@ namespace LkDicomView.Controls
             set
             {
                 frameIndex = value;
-                ShowAnnObjects();
+                Invalidate();
             }
         }
 
-        private void ShowAnnObjects()
+        private void ShowAnnObjects(Graphics g)
         {
             foreach (var i in AnnObjectContainer)
             {
                 if (i.FrameIndex == FrameIndex)
                 {
-                    Controls.Add(i);
-                }
-                else
-                {
-                    Controls.Remove(i);
+                    switch (i.Type)
+                    {
+                        case AnnObjectType.Ruler:
+                            g.DrawLine(new Pen(Color.OrangeRed, 2), i.DrawStartPosition, i.DrawEndPosition);
+                            break;
+                    }
+
+                    if (i.IsSelected)
+                    {
+                        var rect = new Rectangle(
+                            Math.Min(i.DrawStartPosition.X, i.DrawEndPosition.X) - 25,
+                            Math.Min(i.DrawStartPosition.Y, i.DrawEndPosition.Y) - 25,
+                            Math.Abs(i.DrawStartPosition.X - i.DrawEndPosition.X) + 50,
+                            Math.Abs(i.DrawStartPosition.Y - i.DrawEndPosition.Y) + 50
+                            );
+                        g.DrawRectangle(new Pen(Color.White, 2), rect);
+                    }
                 }
             }
         }
 
         protected override void OnClick(EventArgs e)
         {
+            bool IsHited(AnnObject annObject, Point point)
+            {
+                var hitedRange = annObject.DrawStartPosition.GetDistance(point) + annObject.DrawEndPosition.GetDistance(point);
+                var lineRange = annObject.DrawStartPosition.GetDistance(annObject.DrawEndPosition);
+                if (hitedRange - lineRange < 3)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
 
-            AnnObjectContainer.ForEach(a => a.IsSelected = false);
+            var clickPosition = PointToClient(MousePosition);
+            var currentPageAnnObject = AnnObjectContainer.Where(a => a.FrameIndex == FrameIndex);
+            foreach(var i in currentPageAnnObject)
+            {
+                if(IsHited(i, clickPosition))
+                {
+                    i.IsSelected = true;
+                }
+                else
+                {
+                    i.IsSelected = false;
+                }
+            }
             Invalidate();
         }
 
-        public new void OnKeyDown(KeyEventArgs e)
+        public void KeyPressed(KeyEventArgs e)
         {
             if(e.KeyData == Keys.Delete)
             {
                 var currentSelected = AnnObjectContainer.Where(a => a.FrameIndex == frameIndex && a.IsSelected);
                 currentSelected.ToList().ForEach(a => {
                     AnnObjectContainer.Remove(a);
-                    Controls.Remove(a);
                 });
-                base.OnKeyDown(e);
+                Invalidate();
             }
         }
 
         #region 标记
         private bool isLeftMouseDown;
         private Point beginMousePosition;
+        private Graphics g;
         protected override void OnMouseDown(MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
                 isLeftMouseDown = true;
                 beginMousePosition = MousePosition;
+                g = CreateGraphics();
             }
             base.OnMouseDown(e);
         }
+
+        public AnnObjectType CurrentAnnType { get; set; }
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left && isLeftMouseDown)
             {
-                Refresh();
-                CreateGraphics().DrawLine(new Pen(Color.Orange, 2), PointToClient(beginMousePosition), PointToClient(MousePosition));
+                g.DrawLine(new Pen(Color.Orange, 2), PointToClient(beginMousePosition), PointToClient(MousePosition));
             }
             base.OnMouseMove(e);
         }
@@ -131,12 +180,18 @@ namespace LkDicomView.Controls
                 isLeftMouseDown = false;
                 var begin = PointToClient(beginMousePosition);
                 var end = PointToClient(MousePosition);
-                AddAnnObject(AnnObjectType.Ruler, frameIndex, begin, end);
+                AddAnnObject(CurrentAnnType, frameIndex, begin, end);
                 return;
             }
             base.OnMouseUp(e);
         }
 
         #endregion
+
+        protected override void OnPaint(PaintEventArgs pe)
+        {
+            base.OnPaint(pe);
+            ShowAnnObjects(pe.Graphics);
+        }
     }
 }

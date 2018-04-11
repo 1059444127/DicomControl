@@ -35,6 +35,7 @@ namespace LkDicomView
             this.patientIdLabel = new System.Windows.Forms.Label();
             this.patientNameLabel = new System.Windows.Forms.Label();
             this.windowLabel = new System.Windows.Forms.Label();
+            this.patientAddressLabel = new System.Windows.Forms.Label();
             this.imageBox = new LkDicomView.Controls.DicomImageBox();
             ((System.ComponentModel.ISupportInitialize)(this.imageBox)).BeginInit();
             this.SuspendLayout();
@@ -67,7 +68,7 @@ namespace LkDicomView
             this.patientIdLabel.BackColor = System.Drawing.Color.Transparent;
             this.patientIdLabel.Font = new System.Drawing.Font("微软雅黑", 10F);
             this.patientIdLabel.ForeColor = System.Drawing.Color.White;
-            this.patientIdLabel.Location = new System.Drawing.Point(17, 41);
+            this.patientIdLabel.Location = new System.Drawing.Point(17, 42);
             this.patientIdLabel.Name = "patientIdLabel";
             this.patientIdLabel.Size = new System.Drawing.Size(75, 20);
             this.patientIdLabel.TabIndex = 3;
@@ -79,7 +80,7 @@ namespace LkDicomView
             this.patientNameLabel.BackColor = System.Drawing.Color.Transparent;
             this.patientNameLabel.Font = new System.Drawing.Font("微软雅黑", 10F);
             this.patientNameLabel.ForeColor = System.Drawing.Color.White;
-            this.patientNameLabel.Location = new System.Drawing.Point(17, 67);
+            this.patientNameLabel.Location = new System.Drawing.Point(17, 69);
             this.patientNameLabel.Name = "patientNameLabel";
             this.patientNameLabel.Size = new System.Drawing.Size(100, 20);
             this.patientNameLabel.TabIndex = 4;
@@ -98,10 +99,22 @@ namespace LkDicomView
             this.windowLabel.TabIndex = 5;
             this.windowLabel.Text = "WL: WW:";
             // 
+            // patientAddressLabel
+            // 
+            this.patientAddressLabel.AutoSize = true;
+            this.patientAddressLabel.BackColor = System.Drawing.Color.Transparent;
+            this.patientAddressLabel.Font = new System.Drawing.Font("微软雅黑", 10F);
+            this.patientAddressLabel.ForeColor = System.Drawing.Color.White;
+            this.patientAddressLabel.Location = new System.Drawing.Point(17, 96);
+            this.patientAddressLabel.Name = "patientAddressLabel";
+            this.patientAddressLabel.Size = new System.Drawing.Size(149, 20);
+            this.patientAddressLabel.TabIndex = 6;
+            this.patientAddressLabel.Text = "PatientAddressLabel:";
+            // 
             // imageBox
             // 
             this.imageBox.FrameIndex = 0;
-            this.imageBox.Location = new System.Drawing.Point(204, 54);
+            this.imageBox.Location = new System.Drawing.Point(172, 57);
             this.imageBox.Name = "imageBox";
             this.imageBox.Size = new System.Drawing.Size(512, 512);
             this.imageBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -116,6 +129,7 @@ namespace LkDicomView
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
+            this.Controls.Add(this.patientAddressLabel);
             this.Controls.Add(this.windowLabel);
             this.Controls.Add(this.patientNameLabel);
             this.Controls.Add(this.patientIdLabel);
@@ -142,5 +156,6 @@ namespace LkDicomView
         private System.Windows.Forms.Label patientIdLabel;
         private System.Windows.Forms.Label patientNameLabel;
         private System.Windows.Forms.Label windowLabel;
+        private System.Windows.Forms.Label patientAddressLabel;
     }
 }

@@ -10,5 +10,6 @@ namespace LkDicomView.AnnObjects.Enums
     {
         Ruler,
         Rectangle,
+        None,
     }
 }

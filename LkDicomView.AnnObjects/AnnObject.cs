@@ -1,4 +1,5 @@
-﻿using LkDicomView.Library;
+﻿using LkDicomView.AnnObjects.Enums;
+using LkDicomView.Library;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -8,58 +9,39 @@ using System.Windows.Forms;
 
 namespace LkDicomView.AnnObjects
 {
-    public abstract class AnnObject : Panel
+    public abstract class AnnObject
     {
-        public AnnObject()
+        public AnnObject(Point drawStartPosition, Point drawEndPosition)
         {
-            SetStyle(ControlStyles.Opaque, true);
+            this.drawStartPosition = drawStartPosition;
+            DrawStartPosition = drawStartPosition;
+            this.drawEndPosition = drawEndPosition;
+            DrawEndPosition = drawEndPosition;
         }
 
         public int PenWidth { get; set; } = 2;
-
         public int FrameIndex { get; set; }
+        public bool IsSelected { get; set; }
+        public Point DrawStartPosition { get; set; }
+        public Point DrawEndPosition { get; set; }
+        public AnnObjectType Type { get; set; }
+        private float scale = 1;
 
-        protected override CreateParams CreateParams
+        private readonly Point drawStartPosition;
+        private readonly Point drawEndPosition;
+
+        public float Scale
         {
             get
             {
-                CreateParams cp = base.CreateParams;
-                cp.ExStyle |= 0x20;  // 开启 WS_EX_TRANSPARENT,使控件支持透明
-                return cp;
+                return scale;
             }
-        }
-
-        protected Point p1;
-        protected Point p2;
-
-        protected void SetLocation()
-        {
-            Top = Math.Min(p1.Y, p2.Y);
-            Left = Math.Min(p1.X, p2.X);
-            Width = Math.Abs(p2.X - p1.X) + 40;
-            Height = Math.Abs(p2.Y - p1.Y) + 25;
-        }
-
-        private bool isSelected;
-        public bool IsSelected
-        {
-            get { return isSelected; }
-            set { isSelected = value; Invalidate(); }
-        }
-
-        /// <summary>
-        /// 自定义绘制窗体
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            e.Graphics.DrawRectangle(new Pen(Color.FromArgb(0, BackColor), 0), 0, 0, Size.Width, Size.Height);
-            e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(0, BackColor)), 0, 0, Size.Width, Size.Height);
-            if (IsSelected)
+            set
             {
-                e.Graphics.DrawRectangle(new Pen(new SolidBrush(Color.White),2),e.ClipRectangle);
+                scale = value;
+                DrawStartPosition = drawStartPosition.ScalePoint(value);
+                DrawEndPosition = drawEndPosition.ScalePoint(value);
             }
-            base.OnPaint(e);
         }
     }
 }

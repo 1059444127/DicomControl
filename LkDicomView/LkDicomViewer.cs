@@ -8,6 +8,7 @@ using System.IO;
 using LkDicomView.Modules;
 using LkDicomView.Controls;
 using System;
+using System.Text;
 
 namespace LkDicomView
 {
@@ -61,6 +62,14 @@ namespace LkDicomView
             var metaInfo = seriesInformation.GetCurrentDicomImage(currentFrameIndex).Dataset;
             patientIdLabel.Text = $"PatientID: {metaInfo.Get<string>(DicomTag.PatientID)}";
             patientNameLabel.Text = $"PatientName: {metaInfo.Get<string>(DicomTag.PatientName)}";
+            var addbyte = metaInfo.Get<byte[]>(DicomTag.PatientAddress, null);
+            if(addbyte != null)
+            {
+                var address = new MemoryStream(addbyte);
+                var a = Encoding.GetEncoding("GBK").GetString(addbyte);
+                patientAddressLabel.Text = $"PatientAddress: {a}";
+            }
+            
         }
 
         public void LoadDicomFile(string fileName)
@@ -99,7 +108,9 @@ namespace LkDicomView
             if (ModifierKeys == Keys.Control)
             {
                 var tempLocation = imageBox.Location;
-                imageBox.Scale(e.Delta > 0 ? new SizeF(1.1f, 1.1f) : new SizeF(0.9f, 0.9f));
+                var scaleType = e.Delta > 0 ? 1.1f : 0.9f;
+                imageBox.CurrentScale = imageBox.CurrentScale * scaleType;
+                imageBox.Scale(new SizeF(scaleType, scaleType));
                 imageBox.Location = tempLocation;
             }
             else
@@ -161,7 +172,7 @@ namespace LkDicomView
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            imageBox.OnKeyDown(e);
+            imageBox.KeyPressed(e);
         }
 
         public void SetWindowLevel(int windowCenter, int windowWidth)
@@ -169,6 +180,7 @@ namespace LkDicomView
             seriesInformation.WindowCenter = windowCenter;
             seriesInformation.WindowWidth = windowWidth;
             windowLabel.Text = $"WL:{windowCenter} WW:{windowWidth}";
+            CurrentFrameIndex = CurrentFrameIndex;
         }
     }
 }

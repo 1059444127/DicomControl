@@ -13,7 +13,6 @@ namespace LkDicomView.Modules
     {
         private int windowWidth = 400;
         private int windowCenter = 40;
-        private float scale = 1;
 
         public SeriesInformation()
         {
@@ -55,27 +54,6 @@ namespace LkDicomView.Modules
             {
                 windowCenter = value;
                 imageFrames.ForEach(a => a.WindowCenter = value);
-            }
-        }
-
-        public float Scale
-        {
-            get
-            {
-                return (float)Math.Round(scale, 1);
-            }
-            set
-            {
-                if (value > 5)
-                {
-                    value = 5;
-                }
-                if (value < 0.5f)
-                {
-                    value = 0.5f;
-                }
-                scale = value;
-                imageFrames.ForEach(a => a.Scale = value);
             }
         }
 
