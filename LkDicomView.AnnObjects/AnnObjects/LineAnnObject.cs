@@ -19,6 +19,8 @@ namespace LkDicomView.AnnObjects
 
         public override void Draw(Graphics graphics)
         {
+            var pen = new Pen(Color.OrangeRed, PenWidth);
+
             var rect = new Rectangle(
                 Math.Min(DrawStartPosition.X, DrawEndPosition.X) - 25,
                 Math.Min(DrawStartPosition.Y, DrawEndPosition.Y) - 25,
@@ -34,18 +36,16 @@ namespace LkDicomView.AnnObjects
 
             var strPoint = centerPoint.IOffset(-distanceSize.Width / 2, -distanceSize.Height / 2);
 
-            graphics.DrawLine(new Pen(Color.OrangeRed, 2), DrawStartPosition, DrawEndPosition);
+            graphics.DrawLine(pen, DrawStartPosition, DrawEndPosition);
             if (IsSelected)
             {
-                graphics.DrawRectangle(new Pen(Color.White, 2), rect);
+                graphics.DrawRectangle(pen, rect);
             }
 
 
             if (distance >= 100f)
             {
-                graphics.CompositingMode = CompositingMode.SourceCopy;
-                graphics.FillRectangle(new SolidBrush(Color.Transparent), new Rectangle(strPoint, distanceSize));
-                graphics.CompositingMode = CompositingMode.SourceOver;
+                graphics.FillRectangle(new SolidBrush(Color.Black), new Rectangle(strPoint, distanceSize));
                 graphics.DrawString(distanceStr, font, new SolidBrush(Color.OrangeRed), strPoint);
             }
             else

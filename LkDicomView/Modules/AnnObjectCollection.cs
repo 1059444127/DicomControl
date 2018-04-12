@@ -136,29 +136,30 @@ namespace LkDicomView.Modules
             {
                 return;
             }
-            var js = new JavaScriptSerializer();
             var jArray = JsonConvert.DeserializeObject(File.ReadAllText(path)) as JArray;
             foreach (var i in jArray)
             {
+                AnnObject annObject;
                 switch ((AnnObjectType)i["Type"].Value<int>())
                 {
 
                     case AnnObjectType.Ruler:
-                        annObjects.Add(i.ToObject<LineAnnObject>());
+                        annObject = i.ToObject<LineAnnObject>();
                         break;
                     case AnnObjectType.Ellipse:
-                        annObjects.Add(i.ToObject<EllipseAnnObject>());
+                        annObject = i.ToObject<EllipseAnnObject>();
                         break;
                     case AnnObjectType.Rectangle:
-                        annObjects.Add(i.ToObject<RectangleAnnObject>());
+                        annObject = i.ToObject<RectangleAnnObject>();
                         break;
                     default:
                         throw new NotSupportedException();
                 }
+                annObjects.Add(annObject);
+                OnAdded?.Invoke(annObject);
             }
-            OnLoaded?.Invoke();
         }
 
-        public event Action OnLoaded;
+        public event Action<AnnObject> OnAdded;
     }
 }

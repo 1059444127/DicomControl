@@ -102,7 +102,6 @@ namespace LkDicomView
             {
                 var tempLocation = imageBox.Location;
                 var scaleType = e.Delta > 0 ? 1.1f : 0.9f;
-                imageBox.CurrentScale = imageBox.CurrentScale * scaleType;
                 imageBox.Scale(new SizeF(scaleType, scaleType));
                 imageBox.Location = tempLocation;
             }

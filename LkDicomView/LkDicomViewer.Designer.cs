@@ -101,7 +101,6 @@ namespace LkDicomView
             // imageBox
             // 
             this.imageBox.CurrentAnnType = LkDicomView.AnnObjects.Enums.AnnObjectType.None;
-            this.imageBox.CurrentScale = 1F;
             this.imageBox.FrameIndex = 0;
             this.imageBox.Location = new System.Drawing.Point(172, 57);
             this.imageBox.Name = "imageBox";

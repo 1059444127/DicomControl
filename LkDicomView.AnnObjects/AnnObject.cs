@@ -1,5 +1,6 @@
 ﻿using LkDicomView.AnnObjects.Enums;
 using LkDicomView.Library;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -11,52 +12,46 @@ namespace LkDicomView.AnnObjects
 {
     public abstract class AnnObject
     {
-        public AnnObject(Point drawStartPosition, Point drawEndPosition)
+        public AnnObject(Point startPosition, Point endPosition)
         {
-            defaultStartPosition = drawStartPosition;
-            defaultEndPosition = drawEndPosition;
-            defaultRectangle = new Rectangle(
-                drawStartPosition, 
+            StartPosition = startPosition;
+            EndPosition = endPosition;
+            Rectangle = new Rectangle(
+                startPosition, 
                 new Size(
-                    Math.Abs(drawStartPosition.X - drawEndPosition.X), 
-                    Math.Abs(drawStartPosition.Y - drawEndPosition.Y)
+                    Math.Abs(startPosition.X - endPosition.X), 
+                    Math.Abs(startPosition.Y - endPosition.Y)
                 )
             );
         }
 
-        public AnnObject()
-        {
-
-        }
         public int PenWidth { get; set; } = 2;
         public int FrameIndex { get; set; }
+        [JsonIgnore]
         public bool IsSelected { get; set; }
-        public Point DrawStartPosition { get; set; }
-        public Point DrawEndPosition { get; set; }
-        public AnnObjectType Type { get; set; }
-        private float scale = 1;
-
-        private readonly Point defaultStartPosition;
-        private readonly Point defaultEndPosition;
-        private readonly Rectangle defaultRectangle;
-
-        public Point StartPosition => defaultStartPosition;
-        public Point EndPosition => defaultEndPosition;
-        public Rectangle Rectangle => defaultRectangle;
-
-        public float Scale
+        [JsonIgnore]
+        public Point DrawStartPosition
         {
             get
             {
-                return scale;
-            }
-            set
-            {
-                scale = value;
-                DrawStartPosition = defaultStartPosition.ScalePoint(value);
-                DrawEndPosition = defaultEndPosition.ScalePoint(value);
+                return StartPosition.ScalePoint(Scale);
             }
         }
+        [JsonIgnore]
+        public float Scale { get; set; }
+        [JsonIgnore]
+        public Point DrawEndPosition
+        {
+            get
+            {
+                return EndPosition.ScalePoint(Scale);
+            }
+        }
+        public AnnObjectType Type { get; set; }
+
+        public Point StartPosition { get; set; }
+        public Point EndPosition { get; set; }
+        public Rectangle Rectangle { get; set; }
 
         public abstract void Draw(Graphics graphics);
     }

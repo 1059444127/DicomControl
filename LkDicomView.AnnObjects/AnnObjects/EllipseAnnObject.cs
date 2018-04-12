@@ -17,17 +17,18 @@ namespace LkDicomView.AnnObjects
 
         public override void Draw(Graphics graphics)
         {
+            var pen = new Pen(Color.OrangeRed, PenWidth);
+
             var rect = new Rectangle(
                 Math.Min(DrawStartPosition.X, DrawEndPosition.X),
                 Math.Min(DrawStartPosition.Y, DrawEndPosition.Y),
                 Math.Abs(DrawStartPosition.X - DrawEndPosition.X),
                 Math.Abs(DrawStartPosition.Y - DrawEndPosition.Y)
                 );
-            graphics.DrawEllipse(new Pen(Color.OrangeRed, 2), rect);
+            graphics.DrawEllipse(pen, rect);
 
             var centerPoint = DrawStartPosition.GetCenterPoint(DrawEndPosition);
             var str = $"{Rectangle.Width}*{Rectangle.Height}";
-            var pen = new Pen(Color.OrangeRed, 2);
             var font = new Font("微软雅黑", 9);
             var strSize = graphics.MeasureString(str, font).ToSize();
 

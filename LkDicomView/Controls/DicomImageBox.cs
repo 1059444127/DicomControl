@@ -20,36 +20,21 @@ namespace LkDicomView.Controls
             this.DoubleBuffered = true;
             this.ResizeRedraw = true;
             AnnObjectContainer = new AnnObjectContainer();
-            AnnObjectContainer.OnLoaded += OnLoaded;
+            AnnObjectContainer.OnAdded += OnAdded;
 
         }
 
-        private void OnLoaded()
+        private void OnAdded(AnnObject annObject)
         {
-            AnnObjectContainer.ForEach(a => {
-                a.DrawStartPosition = a.StartPosition.ScalePoint(CurrentScale);
-                a.DrawEndPosition = a.EndPosition.ScalePoint(CurrentScale);
-            });
+            annObject.Scale = CurrentScale;
             Invalidate();
-
         }
-
-        private float currentScale = 1;
 
         public float CurrentScale
         {
             get
             {
-                return currentScale;
-            }
-            set
-            {
-                currentScale = value;
-                foreach (var i in AnnObjectContainer)
-                {
-                    i.Scale = value;
-                }
-                Invalidate();
+                return (float)Width / (float)Image.Width;
             }
         }
 
@@ -58,10 +43,16 @@ namespace LkDicomView.Controls
             var annObject = AnnObjectContainer.CreateAnnObject(annObjectType, p1, p2);
             annObject.FrameIndex = frameIndex;
             annObject.PenWidth = 2;
-            annObject.Type = annObjectType;
             annObject.Scale = CurrentScale;
+            annObject.Type = annObjectType;
             AnnObjectContainer.Add(annObject);
             Invalidate();
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            AnnObjectContainer.ForEach(a => a.Scale = CurrentScale);
+            base.OnResize(e);
         }
 
         private int frameIndex;

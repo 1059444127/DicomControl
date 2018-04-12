@@ -33,6 +33,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -45,12 +48,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnnObject.cs"/>
-    <Compile Include="AnnObjects\LineAnnObject.cs"/>
+    <Compile Include="AnnObject.cs" />
+    <Compile Include="AnnObjects\LineAnnObject.cs" />
     <Compile Include="AnnObjects\EllipseAnnObject.cs" />
     <Compile Include="AnnObjects\RectangleAnnObject.cs" />
     <Compile Include="Enums\AnnObjectType.cs" />
-    <Compile Include="Enums\UnitType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +60,9 @@
       <Project>{529C391F-E5C6-4853-9EF1-0F299091B4BA}</Project>
       <Name>LkDicomView.Library</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
