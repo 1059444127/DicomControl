@@ -62,13 +62,6 @@ namespace LkDicomView
             var metaInfo = seriesInformation.GetCurrentDicomImage(currentFrameIndex).Dataset;
             patientIdLabel.Text = $"PatientID: {metaInfo.Get<string>(DicomTag.PatientID)}";
             patientNameLabel.Text = $"PatientName: {metaInfo.Get<string>(DicomTag.PatientName)}";
-            var addbyte = metaInfo.Get<byte[]>(DicomTag.PatientAddress, null);
-            if(addbyte != null)
-            {
-                var address = new MemoryStream(addbyte);
-                var a = Encoding.GetEncoding("GBK").GetString(addbyte);
-                patientAddressLabel.Text = $"PatientAddress: {a}";
-            }
             
         }
 
@@ -170,17 +163,33 @@ namespace LkDicomView
             CurrentFrameIndex = e.NewValue;
         }
 
-        protected override void OnKeyDown(KeyEventArgs e)
-        {
-            imageBox.KeyPressed(e);
-        }
-
         public void SetWindowLevel(int windowCenter, int windowWidth)
         {
             seriesInformation.WindowCenter = windowCenter;
             seriesInformation.WindowWidth = windowWidth;
             windowLabel.Text = $"WL:{windowCenter} WW:{windowWidth}";
             CurrentFrameIndex = CurrentFrameIndex;
+        }
+
+        public void SaveImage(bool hasSign, string path)
+        {
+            if (hasSign)
+            {
+                var image = new Bitmap(imageBox.Image);
+                var g = Graphics.FromImage(image);
+                var annObjects = imageBox.AnnObjectContainer.Where(a => a.FrameIndex == CurrentFrameIndex);
+                foreach(var i in annObjects)
+                {
+                    i.Draw(g);
+                }
+
+                g.Save();
+                image.Save(path);
+            }
+            else
+            {
+                imageBox.Image.Save(path);
+            }
         }
     }
 }

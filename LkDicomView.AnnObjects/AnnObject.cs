@@ -13,12 +13,21 @@ namespace LkDicomView.AnnObjects
     {
         public AnnObject(Point drawStartPosition, Point drawEndPosition)
         {
-            this.drawStartPosition = drawStartPosition;
-            DrawStartPosition = drawStartPosition;
-            this.drawEndPosition = drawEndPosition;
-            DrawEndPosition = drawEndPosition;
+            defaultStartPosition = drawStartPosition;
+            defaultEndPosition = drawEndPosition;
+            defaultRectangle = new Rectangle(
+                drawStartPosition, 
+                new Size(
+                    Math.Abs(drawStartPosition.X - drawEndPosition.X), 
+                    Math.Abs(drawStartPosition.Y - drawEndPosition.Y)
+                )
+            );
         }
 
+        public AnnObject()
+        {
+
+        }
         public int PenWidth { get; set; } = 2;
         public int FrameIndex { get; set; }
         public bool IsSelected { get; set; }
@@ -27,11 +36,13 @@ namespace LkDicomView.AnnObjects
         public AnnObjectType Type { get; set; }
         private float scale = 1;
 
-        private readonly Point drawStartPosition;
-        private readonly Point drawEndPosition;
+        private readonly Point defaultStartPosition;
+        private readonly Point defaultEndPosition;
+        private readonly Rectangle defaultRectangle;
 
-        public Point StartPosition => drawStartPosition;
-        public Point EndPosition => drawEndPosition;
+        public Point StartPosition => defaultStartPosition;
+        public Point EndPosition => defaultEndPosition;
+        public Rectangle Rectangle => defaultRectangle;
 
         public float Scale
         {
@@ -42,9 +53,11 @@ namespace LkDicomView.AnnObjects
             set
             {
                 scale = value;
-                DrawStartPosition = drawStartPosition.ScalePoint(value);
-                DrawEndPosition = drawEndPosition.ScalePoint(value);
+                DrawStartPosition = defaultStartPosition.ScalePoint(value);
+                DrawEndPosition = defaultEndPosition.ScalePoint(value);
             }
         }
+
+        public abstract void Draw(Graphics graphics);
     }
 }

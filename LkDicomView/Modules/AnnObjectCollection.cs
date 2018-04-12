@@ -1,13 +1,17 @@
 ﻿using LkDicomView.AnnObjects;
-using LkDicomView.AnnObjects.AnnObjects;
 using LkDicomView.AnnObjects.Enums;
+using LkDicomView.Library;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Script.Serialization;
 
 namespace LkDicomView.Modules
 {
@@ -107,11 +111,54 @@ namespace LkDicomView.Modules
         {
             switch (annObjectType)
             {
+                case AnnObjectType.None:
+                    return null;
                 case AnnObjectType.Ruler:
                     return new LineAnnObject(p1, p2);
+                case AnnObjectType.Rectangle:
+                    return new RectangleAnnObject(p1, p2);
+                case AnnObjectType.Ellipse:
+                    return new EllipseAnnObject(p1, p2);
                 default:
                     throw new NotSupportedException();
             }
         }
+
+        public void SaveAnnObjects(string savePath)
+        {
+            var jsonData = JsonConvert.SerializeObject(annObjects);//序列化
+            File.WriteAllText(savePath, jsonData);
+        }
+
+        public void LoadAnnObjects(string path)
+        {
+            if (!File.Exists(path))
+            {
+                return;
+            }
+            var js = new JavaScriptSerializer();
+            var jArray = JsonConvert.DeserializeObject(File.ReadAllText(path)) as JArray;
+            foreach (var i in jArray)
+            {
+                switch ((AnnObjectType)i["Type"].Value<int>())
+                {
+
+                    case AnnObjectType.Ruler:
+                        annObjects.Add(i.ToObject<LineAnnObject>());
+                        break;
+                    case AnnObjectType.Ellipse:
+                        annObjects.Add(i.ToObject<EllipseAnnObject>());
+                        break;
+                    case AnnObjectType.Rectangle:
+                        annObjects.Add(i.ToObject<RectangleAnnObject>());
+                        break;
+                    default:
+                        throw new NotSupportedException();
+                }
+            }
+            OnLoaded?.Invoke();
+        }
+
+        public event Action OnLoaded;
     }
 }

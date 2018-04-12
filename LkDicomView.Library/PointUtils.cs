@@ -25,7 +25,7 @@ namespace LkDicomView.Library
             return Math.Sqrt(x * x + y * y);
         }
 
-        public static Point GetCenterPoint(Point point1, Point point2)
+        public static Point GetCenterPoint(this Point point1, Point point2)
         {
             return new Point((point1.X + point2.X) / 2, (point1.Y + point2.Y) / 2);
         }

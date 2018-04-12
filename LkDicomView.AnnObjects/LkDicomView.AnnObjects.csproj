@@ -36,6 +36,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -44,12 +45,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnnObject.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="AnnObjects\LineAnnObject.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="AnnObject.cs"/>
+    <Compile Include="AnnObjects\LineAnnObject.cs"/>
+    <Compile Include="AnnObjects\EllipseAnnObject.cs" />
+    <Compile Include="AnnObjects\RectangleAnnObject.cs" />
     <Compile Include="Enums\AnnObjectType.cs" />
     <Compile Include="Enums\UnitType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

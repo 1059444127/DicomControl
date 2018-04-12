@@ -8,8 +8,10 @@ namespace LkDicomView.AnnObjects.Enums
 {
     public enum AnnObjectType
     {
-        Ruler,
-        Rectangle,
         None,
+        Ruler,
+        Ellipse,
+        Eraser,
+        Rectangle,
     }
 }

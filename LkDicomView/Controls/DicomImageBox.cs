@@ -1,5 +1,4 @@
 ﻿using LkDicomView.AnnObjects;
-using LkDicomView.AnnObjects.AnnObjects;
 using LkDicomView.AnnObjects.Enums;
 using LkDicomView.Library;
 using LkDicomView.Modules;
@@ -18,9 +17,20 @@ namespace LkDicomView.Controls
 
         public DicomImageBox()
         {
-            //this.DoubleBuffered = true;
+            this.DoubleBuffered = true;
             this.ResizeRedraw = true;
             AnnObjectContainer = new AnnObjectContainer();
+            AnnObjectContainer.OnLoaded += OnLoaded;
+
+        }
+
+        private void OnLoaded()
+        {
+            AnnObjectContainer.ForEach(a => {
+                a.DrawStartPosition = a.StartPosition.ScalePoint(CurrentScale);
+                a.DrawEndPosition = a.EndPosition.ScalePoint(CurrentScale);
+            });
+            Invalidate();
 
         }
 
@@ -48,9 +58,8 @@ namespace LkDicomView.Controls
             var annObject = AnnObjectContainer.CreateAnnObject(annObjectType, p1, p2);
             annObject.FrameIndex = frameIndex;
             annObject.PenWidth = 2;
-            annObject.IsSelected = true;
-            annObject.Type = AnnObjectType.Ruler;
-
+            annObject.Type = annObjectType;
+            annObject.Scale = CurrentScale;
             AnnObjectContainer.Add(annObject);
             Invalidate();
         }
@@ -80,25 +89,9 @@ namespace LkDicomView.Controls
         {
             foreach (var i in AnnObjectContainer)
             {
-                var rect = new Rectangle(
-                    Math.Min(i.DrawStartPosition.X, i.DrawEndPosition.X) - 25,
-                    Math.Min(i.DrawStartPosition.Y, i.DrawEndPosition.Y) - 25,
-                    Math.Abs(i.DrawStartPosition.X - i.DrawEndPosition.X) + 50,
-                    Math.Abs(i.DrawStartPosition.Y - i.DrawEndPosition.Y) + 50
-                    );
                 if (i.FrameIndex == FrameIndex)
                 {
-                    switch (i.Type)
-                    {
-                        case AnnObjectType.Ruler:
-                            g.DrawLine(new Pen(Color.OrangeRed, 2), i.DrawStartPosition, i.DrawEndPosition);
-                            break;
-                    }
-
-                    if (i.IsSelected)
-                    {
-                        g.DrawRectangle(new Pen(Color.White, 2), rect);
-                    }
+                    i.Draw(g);
                 }
             }
         }
@@ -123,29 +116,17 @@ namespace LkDicomView.Controls
             var currentPageAnnObject = AnnObjectContainer.Where(a => a.FrameIndex == FrameIndex);
             foreach (var i in currentPageAnnObject)
             {
+                
                 if (IsHited(i, clickPosition))
                 {
-                    i.IsSelected = true;
-                }
-                else
-                {
-                    i.IsSelected = false;
+                    if (CurrentAnnType == AnnObjectType.Eraser)
+                    {
+                        AnnObjectContainer.Remove(i);
+                        break;
+                    }
                 }
             }
             Invalidate();
-        }
-
-        public void KeyPressed(KeyEventArgs e)
-        {
-            if (e.KeyData == Keys.Delete)
-            {
-                var currentSelected = AnnObjectContainer.Where(a => a.FrameIndex == frameIndex && a.IsSelected);
-                currentSelected.ToList().ForEach(a =>
-                {
-                    AnnObjectContainer.Remove(a);
-                });
-                Invalidate();
-            }
         }
 
         #region 标记
@@ -156,6 +137,10 @@ namespace LkDicomView.Controls
         {
             if (e.Button == MouseButtons.Left)
             {
+                if(CurrentAnnType == AnnObjectType.None || CurrentAnnType == AnnObjectType.Eraser)
+                {
+                    return;
+                }
                 isLeftMouseDown = true;
                 beginMousePosition = MousePosition;
                 g = CreateGraphics();
@@ -167,8 +152,13 @@ namespace LkDicomView.Controls
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
+            if (CurrentAnnType == AnnObjectType.None || CurrentAnnType == AnnObjectType.Eraser)
+            {
+                return;
+            }
             if (e.Button == MouseButtons.Left && isLeftMouseDown)
             {
+                Refresh();
                 g.DrawLine(new Pen(Color.Orange, 2), PointToClient(beginMousePosition), PointToClient(MousePosition));
             }
             base.OnMouseMove(e);
@@ -176,12 +166,22 @@ namespace LkDicomView.Controls
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
+            if (CurrentAnnType == AnnObjectType.None || CurrentAnnType == AnnObjectType.Eraser)
+            {
+                return;
+            }
             if (e.Button == MouseButtons.Left && isLeftMouseDown && beginMousePosition.GetDistance(MousePosition) > 2)
             {
                 isLeftMouseDown = false;
-                var begin = PointToClient(beginMousePosition);
-                var end = PointToClient(MousePosition);
-                AddAnnObject(CurrentAnnType, frameIndex, begin, end);
+                var beginPoint = new Point(
+                        x: (int)(PointToClient(beginMousePosition).X / (float)Width * Image.Width),
+                        y: (int)(PointToClient(beginMousePosition).Y / (float)Height * Image.Height)
+                    );
+                var endPoint = new Point(
+                        x: (int)(PointToClient(MousePosition).X / (float)Width * Image.Width),
+                        y: (int)(PointToClient(MousePosition).Y / (float)Height * Image.Height)
+                    );
+                AddAnnObject(CurrentAnnType, frameIndex, beginPoint, endPoint);
                 return;
             }
             base.OnMouseUp(e);
